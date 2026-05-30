@@ -1,32 +1,33 @@
+import os
+from pathlib import Path
 import pandas as pd
 
 
 def clean_weather_data(input_file, output_file):
+    df = pd.read_csv(input_file, parse_dates=["time"])
 
-    df = pd.read_csv(input_file)
-
-    df["time"] = pd.to_datetime(df["time"])
-
-    df.columns = [
-        "date",
-        "mean_temp",
-        "max_temp",
-        "min_temp",
-        "precipitation"
-    ]
+    df = df.rename(
+        columns={
+            "time": "date",
+            "temperature_2m_mean": "mean_temp",
+            "temperature_2m_max": "max_temp",
+            "temperature_2m_min": "min_temp",
+            "precipitation_sum": "precipitation",
+        }
+    )
 
     df["month"] = df["date"].dt.month
     df["year"] = df["date"].dt.year
 
-    df.to_csv(output_file, index=False)
+    output_path = Path(output_file)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Cleaned data saved to {output_file}")
+    df.to_csv(output_path, index=False)
+    print(f"Cleaned data successfully saved to {output_path}")
 
 
 if __name__ == "__main__":
-
     clean_weather_data(
         input_file="data/raw/hannover_weather_2024.csv",
-        output_file="data/processed/hannover_weather_2024_clean.csv"
+        output_file="data/processed/hannover_weather_2024_clean.csv",
     )
-
