@@ -1,3 +1,4 @@
+from pathlib import Path
 import requests
 import pandas as pd
 
@@ -38,3 +39,12 @@ if __name__ == "__main__":
     )
 
     print(weather_df.head())
+
+output_dir = Path("data/raw")
+output_file = output_dir/"hannover_weather_2024.csv"
+output_dir.makdir(parents=True, exist_ok=True)
+
+weather_df.to_csv(output_file, index = False)
+print(f"Data saved to {output_file}")
+
+
