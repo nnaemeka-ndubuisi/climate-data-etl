@@ -2,6 +2,7 @@ from logger import logger
 from pathlib import Path
 from extract import get_weather_data
 from load import load_to_database
+from quality import run_quality_checks
 from transform import clean_weather_data
 from validate import validate_database
 from config import CITIES, START_DATE, END_DATE, YEAR
@@ -39,6 +40,10 @@ def run_pipeline():
             output_file=str(processed_file),
             city_name=city_key,
         )
+        run_quality_checks(
+            input_file=str(processed_file),
+            expected_rows=366,
+        )
 
         logger.info("[3/4] Loading data into SQLite database")
         load_mode = "replace" if index == 0 else "append"
@@ -54,7 +59,8 @@ def run_pipeline():
         table_name="weather_data",
     )
 
-    logger.info("\n--- Multi-City Pipeline Completed Successfully ---")
+    logger.info("=" * 60)
+    logger.info("Multi-City ETL Pipeline completed successfully.")
 
 
 if __name__ == "__main__":
