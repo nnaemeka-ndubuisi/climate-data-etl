@@ -1,3 +1,4 @@
+from logger import logger
 from pathlib import Path
 from extract import get_weather_data
 from load import load_to_database
@@ -7,7 +8,7 @@ from config import CITIES, START_DATE, END_DATE, YEAR
 
 
 def run_pipeline():
-    print("--- Starting Multi-City ETL Pipeline ---")
+    logger.info("--- Starting Multi-City ETL Pipeline ---")
 
     raw_dir = Path("data/raw")
     processed_dir = Path("data/processed")
@@ -17,12 +18,12 @@ def run_pipeline():
     database_file = Path("data/weather.db")
 
     for index, (city_key, city) in enumerate(CITIES.items()):
-        print(f"\nProcessing city: {city_key}")
+        logger.info(f"\nProcessing city: {city_key}")
 
         raw_file = raw_dir / f"{city_key}_weather_{YEAR}.csv"
         processed_file = processed_dir / f"{city_key}_weather_{YEAR}_clean.csv"
 
-        print("[1/4] Extracting data from Open-Meteo API")
+        logger.info("[1/4] Extracting data from Open-Meteo API")
         weather_df = get_weather_data(
             latitude=city["latitude"],
             longitude=city["longitude"],
@@ -30,16 +31,16 @@ def run_pipeline():
             end_date=END_DATE,
         )
         weather_df.to_csv(raw_file, index=False)
-        print(f"      Raw data cached at: {raw_file}")
+        logger.info(f"      Raw data cached at: {raw_file}")
 
-        print("[2/4] Transforming data")
+        logger.info("[2/4] Transforming data")
         clean_weather_data(
             input_file=str(raw_file),
             output_file=str(processed_file),
             city_name=city_key,
         )
 
-        print("[3/4] Loading data into SQLite database")
+        logger.info("[3/4] Loading data into SQLite database")
         load_mode = "replace" if index == 0 else "append"
         load_to_database(
             input_file=str(processed_file),
@@ -47,13 +48,13 @@ def run_pipeline():
             if_exists=load_mode,
         )
 
-    print("\n[4/4] Validating SQLite database")
+    logger.info("\n[4/4] Validating SQLite database")
     validate_database(
         db_file=str(database_file),
         table_name="weather_data",
     )
 
-    print("\n--- Multi-City Pipeline Completed Successfully ---")
+    logger.info("\n--- Multi-City Pipeline Completed Successfully ---")
 
 
 if __name__ == "__main__":

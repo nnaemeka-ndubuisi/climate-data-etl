@@ -224,3 +224,7 @@ __marimo__/
 data/raw/
 data/processed/
 data/*.db
+
+# Log files
+outputs/logs/
+*.log
