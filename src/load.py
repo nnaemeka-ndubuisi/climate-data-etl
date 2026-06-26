@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def load_to_database(input_file, db_file):
+def load_to_database(input_file, db_file, if_exists="replace"):
     df = pd.read_csv(input_file)
 
     db_path = Path(db_file)
@@ -13,7 +13,7 @@ def load_to_database(input_file, db_file):
         df.to_sql(
             name="weather_data",
             con=conn,
-            if_exists="replace",
+            if_exists=if_exists,
             index=False,
         )
 
@@ -24,4 +24,5 @@ if __name__ == "__main__":
     load_to_database(
         input_file="data/processed/hannover_weather_2024_clean.csv",
         db_file="data/weather.db",
+        if_exists="replace",
     )
