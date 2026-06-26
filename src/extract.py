@@ -2,8 +2,20 @@ from pathlib import Path
 import requests
 import pandas as pd
 
+from logger import logger
+
 
 def get_weather_data(latitude, longitude, start_date, end_date):
+    """
+    Retrieve historical daily weather observations
+    from the Open-Meteo Archive API.
+    """
+
+    logger.info(
+        f"Requesting weather data ({start_date} to {end_date}) "
+        f"for coordinates ({latitude}, {longitude})"
+    )
+
     url = (
         "https://archive-api.open-meteo.com/v1/archive"
         f"?latitude={latitude}"
@@ -17,34 +29,34 @@ def get_weather_data(latitude, longitude, start_date, end_date):
         "&timezone=Europe/Berlin"
     )
 
-    response = requests.get(url, timeout=30)
+    response = requests.get(url)
     response.raise_for_status()
 
     data = response.json()
 
-    return pd.DataFrame(data["daily"])
+    weather_df = pd.DataFrame(data["daily"])
+
+    logger.info(f"Retrieved {len(weather_df)} daily observations")
+
+    return weather_df
 
 
 if __name__ == "__main__":
-    hannover_lat = 52.3759
-    hannover_lon = 9.7320
-
-    print("Fetching weather data...")
 
     weather_df = get_weather_data(
-        latitude=hannover_lat,
-        longitude=hannover_lon,
+        latitude=52.3759,
+        longitude=9.7320,
         start_date="2024-01-01",
         end_date="2024-12-31",
     )
 
-    print("\nFirst few rows:")
+    logger.info("Preview of extracted data:")
     print(weather_df.head())
 
     output_dir = Path("data/raw")
-    output_file = output_dir / "hannover_weather_2024.csv"
-
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_file = output_dir / "hannover_weather_2024.csv"
     weather_df.to_csv(output_file, index=False)
 
-    print(f"\nFile successfully saved to: {output_file}")
+    logger.info(f"Saved extracted data to {output_file}")
