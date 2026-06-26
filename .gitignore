@@ -231,3 +231,6 @@ outputs/logs/
 
 # Generated reports
 outputs/reports/
+
+# Generated analysis outputs
+outputs/analysis/
