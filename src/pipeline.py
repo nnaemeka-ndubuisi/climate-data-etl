@@ -19,7 +19,8 @@ def run_pipeline():
     database_file = Path("data/weather.db")
 
     for index, (city_key, city) in enumerate(CITIES.items()):
-        logger.info(f"\nProcessing city: {city_key}")
+        logger.info("=" * 60)
+        logger.info(f"Processing city: {city_key.title()}")
 
         raw_file = raw_dir / f"{city_key}_weather_{YEAR}.csv"
         processed_file = processed_dir / f"{city_key}_weather_{YEAR}_clean.csv"
@@ -53,7 +54,8 @@ def run_pipeline():
             if_exists=load_mode,
         )
 
-    logger.info("\n[4/4] Validating SQLite database")
+    logger.info("=" * 60)
+    logger.info("[4/4] Validating SQLite database")
     validate_database(
         db_file=str(database_file),
         table_name="weather_data",
