@@ -7,46 +7,86 @@ def run_quality_checks(input_file, expected_rows=None):
 
     logger.info("Running data quality checks")
 
+    # -------------------------------------------------
     # 1. Missing values
-    missing_values = df.isnull().sum()
-    if missing_values.sum() > 0:
-        logger.warning(f"Missing values found:\n{missing_values[missing_values > 0]}")
+    # -------------------------------------------------
+    missing_values = int(df.isnull().sum().sum())
+
+    if missing_values > 0:
+        logger.warning(f"Missing values found: {missing_values}")
     else:
         logger.info("No missing values found")
 
+    # -------------------------------------------------
     # 2. Duplicate city-date records
-    duplicate_count = df.duplicated(subset=["city", "date"]).sum()
-    if duplicate_count > 0:
-        logger.warning(f"Duplicate city-date records found: {duplicate_count}")
+    # -------------------------------------------------
+    duplicate_records = int(df.duplicated(subset=["city", "date"]).sum())
+
+    if duplicate_records > 0:
+        logger.warning(f"Duplicate city-date records found: {duplicate_records}")
     else:
         logger.info("No duplicate city-date records found")
 
+    # -------------------------------------------------
     # 3. Temperature consistency
-    invalid_temp_order = df[
-        (df["max_temp"] < df["mean_temp"]) |
-        (df["mean_temp"] < df["min_temp"])
-    ]
+    # -------------------------------------------------
+    temperature_errors = int(
+        (
+            (df["max_temp"] < df["mean_temp"]) |
+            (df["mean_temp"] < df["min_temp"])
+        ).sum()
+    )
 
-    if len(invalid_temp_order) > 0:
-        logger.warning(f"Invalid temperature ordering found: {len(invalid_temp_order)} records")
+    if temperature_errors > 0:
+        logger.warning(
+            f"Invalid temperature ordering found: {temperature_errors} records"
+        )
     else:
         logger.info("Temperature ordering checks passed")
 
+    # -------------------------------------------------
     # 4. Negative precipitation
-    negative_precip = df[df["precipitation"] < 0]
+    # -------------------------------------------------
+    negative_precipitation = int((df["precipitation"] < 0).sum())
 
-    if len(negative_precip) > 0:
-        logger.warning(f"Negative precipitation values found: {len(negative_precip)} records")
+    if negative_precipitation > 0:
+        logger.warning(
+            f"Negative precipitation values found: {negative_precipitation} records"
+        )
     else:
         logger.info("Precipitation checks passed")
 
+    # -------------------------------------------------
     # 5. Expected row count
+    # -------------------------------------------------
+    row_count = len(df)
+
     if expected_rows is not None:
-        if len(df) != expected_rows:
+        if row_count != expected_rows:
             logger.warning(
-                f"Unexpected row count: expected {expected_rows}, found {len(df)}"
+                f"Unexpected row count: expected {expected_rows}, found {row_count}"
             )
         else:
             logger.info(f"Expected row count confirmed: {expected_rows}")
 
     logger.info("Data quality checks completed")
+
+    # -------------------------------------------------
+    # Return quality metrics for reporting
+    # -------------------------------------------------
+    return {
+        "missing_values": missing_values,
+        "duplicate_records": duplicate_records,
+        "temperature_errors": temperature_errors,
+        "negative_precipitation": negative_precipitation,
+        "row_count": row_count,
+    }
+
+
+if __name__ == "__main__":
+    summary = run_quality_checks(
+        input_file="data/processed/hannover_weather_2024_clean.csv",
+        expected_rows=366,
+    )
+
+    print(summary)

@@ -228,3 +228,6 @@ data/*.db
 # Log files
 outputs/logs/
 *.log
+
+# Generated reports
+outputs/reports/
