@@ -88,6 +88,8 @@ load.py
         ↓
 SQLite Database
         ↓
+validate.py
+        ↓
 pipeline.py
 ```
 
