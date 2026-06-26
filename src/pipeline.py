@@ -2,6 +2,7 @@ from pathlib import Path
 from extract import get_weather_data
 from load import load_to_database
 from transform import clean_weather_data
+from validate import validate_database
 
 
 def run_pipeline():
@@ -19,7 +20,7 @@ def run_pipeline():
     database_file = Path("data/weather.db")
 
     # 2. EXTRACT
-    print("[1/3] Extracting data from Open-Meteo API")
+    print("[1/4] Extracting data from Open-Meteo API")
     weather_df = get_weather_data(
         latitude=52.3759,
         longitude=9.7320,
@@ -30,16 +31,22 @@ def run_pipeline():
     print(f"      Raw data cached at: {raw_file}")
 
     # 3. TRANSFORM
-    print("[2/3] Transforming data (cleaning & feature engineering)")
+    print("[2/4] Transforming data (cleaning & feature engineering)")
     clean_weather_data(input_file=str(raw_file), output_file=str(processed_file))
 
     # 4. LOAD
-    print("[3/3] Loading data into SQLite database")
+    print("[3/4] Loading data into SQLite database")
     load_to_database(
     input_file=str(processed_file),
     db_file=str(database_file)
 )
 
+    # 5. VALIDATE
+    print("[4/4] Validating SQLite database")
+    validate_database(
+        db_file=str(database_file),
+        table_name="weather_data",
+    )
     print("\n--- Pipeline Completed Successfully ---")
 
 
