@@ -2,11 +2,12 @@
 
 ## Overview
 
-This project demonstrates an end-to-end ETL (Extract, Transform, Load) pipeline for historical climate data across major German cities.
+This project demonstrates an end-to-end ETL (Extract, Transform, Load) pipeline for historical climate data using Python, Pandas, SQLite, and the Open-Meteo API.
 
-The objective is to automate the collection, cleaning, storage, and analysis of weather observations using Python and open climate datasets.
+The pipeline automates the extraction of weather observations, performs data cleaning and feature engineering, stores processed datasets, and loads analysis-ready data into a SQLite database for querying and downstream analytics.
 
-The project is designed to show practical environmental data science, data engineering, and analytics skills through a reproducible workflow.
+The project showcases practical data engineering, environmental data analytics, API integration, and reproducible workflow development using Git and GitHub.
+
 
 ---
 
@@ -34,13 +35,9 @@ The project is designed to show practical environmental data science, data engin
 
 ---
 
-## Cities Included
+## Current City
 
 - Hannover
-- Berlin
-- Hamburg
-- Munich
-- Cologne
 
 ---
 
@@ -74,14 +71,62 @@ climate-data-etl/
 ```
 
 ---
+## ETL Architecture
+
+```text
+Open-Meteo API
+        ↓
+extract.py
+        ↓
+Raw CSV
+        ↓
+transform.py
+        ↓
+Processed CSV
+        ↓
+load.py
+        ↓
+SQLite Database
+        ↓
+pipeline.py
+```
+
+## Example Workflow
+
+```bash
+python3 src/pipeline.py
+```
+
+This command executes the complete ETL workflow:
+
+1. Extract weather data from the Open-Meteo API
+2. Store raw observations as CSV
+3. Clean and transform the dataset
+4. Load processed data into SQLite
+5. Prepare data for downstream analysis
+
+---
 
 ## Status
 
 Project under active development.
 
-Current milestone:
-- Repository initialised
-- Project structure design completed
+### Completed Milestones
 
-Next milestone:
-- Weather data extraction from Open-Meteo API
+* Repository initialised
+* Project structure implemented
+* Open-Meteo API integration completed
+* Weather data extraction workflow implemented
+* Data cleaning and feature engineering completed
+* SQLite database loading completed
+* End-to-end ETL orchestration implemented (`pipeline.py`)
+* Database validation completed using SQL queries
+
+### Upcoming Enhancements
+
+* Multi-city climate data processing
+* Data quality validation checks
+* Logging and monitoring
+* Climate trend visualisations
+* Automated reporting
+
