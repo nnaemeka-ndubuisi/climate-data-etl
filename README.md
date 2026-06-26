@@ -2,51 +2,57 @@
 
 ## Overview
 
-This project demonstrates an end-to-end ETL (Extract, Transform, Load) pipeline for historical climate data using Python, Pandas, SQLite, and the Open-Meteo API.
+This project demonstrates a configurable, end-to-end ETL (Extract, Transform, Load) pipeline for historical weather data using **Python, Pandas, SQLite, and the Open-Meteo Archive API**.
 
-The pipeline automates the extraction of weather observations, performs data cleaning and feature engineering, stores processed datasets, and loads analysis-ready data into a SQLite database for querying and downstream analytics.
+The pipeline automatically extracts daily weather observations for multiple German cities, performs data cleaning and feature engineering, stores analysis-ready datasets in both CSV and SQLite formats, and validates the resulting database using SQL queries.
 
-The project showcases practical data engineering, environmental data analytics, API integration, and reproducible workflow development using Git and GitHub.
-
+The project showcases practical data engineering principles including API integration, modular software design, configuration-driven workflows, SQL database management, and reproducible ETL development using Git and GitHub.
 
 ---
 
 ## Project Goals
 
-- Extract historical climate data from public APIs
-- Clean and validate raw datasets
-- Transform data into analysis-ready formats
-- Store processed data in CSV and SQLite formats
-- Generate exploratory climate analyses and visualisations
-- Demonstrate reproducible ETL pipeline development
+* Extract historical weather observations from a public API
+* Automate data ingestion for multiple cities
+* Clean and transform raw datasets
+* Store processed data in CSV and SQLite formats
+* Validate database integrity using SQL queries
+* Demonstrate reproducible ETL pipeline development
+* Provide a foundation for future climate analytics and reporting
 
 ---
 
 ## Technologies
 
-- Python
-- Pandas
-- NumPy
-- Requests
-- SQLite
-- Matplotlib
-- Jupyter Notebook
-- Git & GitHub
+* Python
+* Pandas
+* NumPy
+* Requests
+* SQLite
+* Matplotlib
+* Jupyter Notebook
+* Git & GitHub
 
 ---
 
-## Current City
+## Supported Cities
 
-- Hannover
+The pipeline currently processes historical daily weather observations for:
+
+* Hannover
+* Berlin
+* Hamburg
+* Munich
+* Cologne
 
 ---
 
 ## Climate Variables
 
-- Daily Mean Temperature
-- Daily Maximum Temperature
-- Daily Minimum Temperature
-- Daily Precipitation
+* Daily Mean Temperature
+* Daily Maximum Temperature
+* Daily Minimum Temperature
+* Daily Precipitation
 
 ---
 
@@ -56,79 +62,193 @@ The project showcases practical data engineering, environmental data analytics, 
 climate-data-etl/
 ├── data/
 │   ├── raw/
-│   └── processed/
+│   ├── processed/
+│   └── weather.db
+│
 ├── notebooks/
+│
 ├── outputs/
 │   └── figures/
+│
 ├── src/
+│   ├── config.py
 │   ├── extract.py
 │   ├── transform.py
 │   ├── load.py
+│   ├── validate.py
 │   └── pipeline.py
+│
 ├── README.md
 ├── requirements.txt
 └── .gitignore
 ```
 
 ---
+
 ## ETL Architecture
 
 ```text
-Open-Meteo API
-        ↓
-extract.py
-        ↓
-Raw CSV
-        ↓
-transform.py
-        ↓
-Processed CSV
-        ↓
-load.py
-        ↓
-SQLite Database
-        ↓
-validate.py
-        ↓
-pipeline.py
+              config.py
+                   │
+                   ▼
+        Open-Meteo Archive API
+                   │
+                   ▼
+             extract.py
+                   │
+                   ▼
+              Raw CSV Files
+                   │
+                   ▼
+            transform.py
+                   │
+                   ▼
+         Processed CSV Files
+                   │
+                   ▼
+              load.py
+                   │
+                   ▼
+         SQLite Database
+                   │
+                   ▼
+           validate.py
 ```
 
+The pipeline orchestrates the entire workflow automatically for every configured city.
+
+---
+
 ## Example Workflow
+
+Run the complete pipeline:
 
 ```bash
 python3 src/pipeline.py
 ```
 
-This command executes the complete ETL workflow:
+The pipeline automatically performs the following steps for every configured city:
 
-1. Extract weather data from the Open-Meteo API
-2. Store raw observations as CSV
-3. Clean and transform the dataset
-4. Load processed data into SQLite
-5. Prepare data for downstream analysis
+1. Read city configuration
+2. Extract historical weather observations from the Open-Meteo API
+3. Store raw observations as CSV
+4. Clean and transform the dataset
+5. Load processed data into SQLite
+6. Validate database integrity using SQL queries
 
 ---
 
-## Status
+## Output
 
-Project under active development.
+After execution, the project generates:
 
-### Completed Milestones
+### Raw Data
 
-* Repository initialised
-* Project structure implemented
-* Open-Meteo API integration completed
-* Weather data extraction workflow implemented
-* Data cleaning and feature engineering completed
-* SQLite database loading completed
-* End-to-end ETL orchestration implemented (`pipeline.py`)
-* Database validation completed using SQL queries
+```text
+data/raw/
+```
 
-### Upcoming Enhancements
+Example:
 
-* Multi-city climate data processing
-* Data quality validation checks
+```text
+hannover_weather_2024.csv
+berlin_weather_2024.csv
+hamburg_weather_2024.csv
+munich_weather_2024.csv
+cologne_weather_2024.csv
+```
+
+### Processed Data
+
+```text
+data/processed/
+```
+
+Example:
+
+```text
+hannover_weather_2024_clean.csv
+berlin_weather_2024_clean.csv
+hamburg_weather_2024_clean.csv
+munich_weather_2024_clean.csv
+cologne_weather_2024_clean.csv
+```
+
+### SQLite Database
+
+```text
+data/weather.db
+```
+
+Database table:
+
+```text
+weather_data
+```
+
+Current schema:
+
+| Column        | Description               |
+| ------------- | ------------------------- |
+| date          | Observation date          |
+| mean_temp     | Daily mean temperature    |
+| max_temp      | Daily maximum temperature |
+| min_temp      | Daily minimum temperature |
+| precipitation | Daily precipitation       |
+| city          | Source city               |
+| month         | Month extracted from date |
+| year          | Year extracted from date  |
+
+---
+
+## Database Validation
+
+The validation module automatically verifies:
+
+* Database creation
+* Table existence
+* Total rows loaded
+* Column schema
+* Date range
+* Sample records
+
+For the current configuration:
+
+* **Cities:** 5
+* **Observations per city:** 366
+* **Total observations:** 1,830
+
+---
+
+## Completed Features
+
+* Repository initialization
+* Modular project architecture
+* Open-Meteo API integration
+* Multi-city weather data extraction
+* Automated ETL orchestration
+* Data cleaning and feature engineering
+* Configuration-driven workflow
+* SQLite database integration
+* SQL-based database validation
+* Dynamic file naming
+* Reusable pipeline design
+
+---
+
+## Future Enhancements
+
+* Advanced data quality checks
 * Logging and monitoring
-* Climate trend visualisations
-* Automated reporting
+* Climate trend visualizations
+* Automated summary reports
+* Unit testing
+* Support for additional weather variables
+* PostgreSQL backend
+* Docker containerization
 
+---
+
+## License
+
+This project is intended for educational and portfolio purposes.
