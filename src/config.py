@@ -23,3 +23,4 @@ CITIES = {
 
 START_DATE = "2024-01-01"
 END_DATE = "2024-12-31"
+YEAR = START_DATE.split("-")[0]
