@@ -7,54 +7,53 @@ from config import CITIES, START_DATE, END_DATE, YEAR
 
 
 def run_pipeline():
-    print("--- Starting ETL Pipeline ---")
-    city_key = "hannover"
-    city = CITIES[city_key]
+    print("--- Starting Multi-City ETL Pipeline ---")
 
-    # 1. Defining paths and ensuring base directories exist
     raw_dir = Path("data/raw")
     processed_dir = Path("data/processed")
-
     raw_dir.mkdir(parents=True, exist_ok=True)
     processed_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_file = raw_dir / f"{city_key}_weather_{YEAR}.csv"
-    processed_file = processed_dir / f"{city_key}_weather_{YEAR}_clean.csv"
     database_file = Path("data/weather.db")
 
-    # 2. EXTRACT
-    print("[1/4] Extracting data from Open-Meteo API")
-    weather_df = get_weather_data(
-        latitude=city["latitude"],
-        longitude=city["longitude"],
-        start_date=START_DATE,
-        end_date=END_DATE,
-    )
-    weather_df.to_csv(raw_file, index=False)
-    print(f"      Raw data cached at: {raw_file}")
+    for index, (city_key, city) in enumerate(CITIES.items()):
+        print(f"\nProcessing city: {city_key}")
 
-    # 3. TRANSFORM
-    print("[2/4] Transforming data (cleaning & feature engineering)")
-    clean_weather_data(
-    input_file=str(raw_file),
-    output_file=str(processed_file),
-    city_name=city_key,
-    )
+        raw_file = raw_dir / f"{city_key}_weather_{YEAR}.csv"
+        processed_file = processed_dir / f"{city_key}_weather_{YEAR}_clean.csv"
 
-    # 4. LOAD
-    print("[3/4] Loading data into SQLite database")
-    load_to_database(
-    input_file=str(processed_file),
-    db_file=str(database_file),
-    )
+        print("[1/4] Extracting data from Open-Meteo API")
+        weather_df = get_weather_data(
+            latitude=city["latitude"],
+            longitude=city["longitude"],
+            start_date=START_DATE,
+            end_date=END_DATE,
+        )
+        weather_df.to_csv(raw_file, index=False)
+        print(f"      Raw data cached at: {raw_file}")
 
-    # 5. VALIDATE
-    print("[4/4] Validating SQLite database")
+        print("[2/4] Transforming data")
+        clean_weather_data(
+            input_file=str(raw_file),
+            output_file=str(processed_file),
+            city_name=city_key,
+        )
+
+        print("[3/4] Loading data into SQLite database")
+        load_mode = "replace" if index == 0 else "append"
+        load_to_database(
+            input_file=str(processed_file),
+            db_file=str(database_file),
+            if_exists=load_mode,
+        )
+
+    print("\n[4/4] Validating SQLite database")
     validate_database(
         db_file=str(database_file),
         table_name="weather_data",
     )
-    print("\n--- Pipeline Completed Successfully ---")
+
+    print("\n--- Multi-City Pipeline Completed Successfully ---")
 
 
 if __name__ == "__main__":
