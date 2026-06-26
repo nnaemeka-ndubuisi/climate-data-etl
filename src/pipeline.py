@@ -3,7 +3,7 @@ from extract import get_weather_data
 from load import load_to_database
 from transform import clean_weather_data
 from validate import validate_database
-from config import CITIES, START_DATE, END_DATE
+from config import CITIES, START_DATE, END_DATE, YEAR
 
 
 def run_pipeline():
@@ -18,8 +18,8 @@ def run_pipeline():
     raw_dir.mkdir(parents=True, exist_ok=True)
     processed_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_file = raw_dir / f"{city_key}_weather_2024.csv"
-    processed_file = processed_dir / f"{city_key}_weather_2024_clean.csv"
+    raw_file = raw_dir / f"{city_key}_weather_{YEAR}.csv"
+    processed_file = processed_dir / f"{city_key}_weather_{YEAR}_clean.csv"
     database_file = Path("data/weather.db")
 
     # 2. EXTRACT
@@ -35,7 +35,11 @@ def run_pipeline():
 
     # 3. TRANSFORM
     print("[2/4] Transforming data (cleaning & feature engineering)")
-    clean_weather_data(input_file=str(raw_file), output_file=str(processed_file))
+    clean_weather_data(
+    input_file=str(raw_file),
+    output_file=str(processed_file),
+    city_name=city_key,
+    )
 
     # 4. LOAD
     print("[3/4] Loading data into SQLite database")

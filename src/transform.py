@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def clean_weather_data(input_file, output_file):
+def clean_weather_data(input_file, output_file, city_name):
     df = pd.read_csv(input_file, parse_dates=["time"])
 
     df = df.rename(
@@ -16,6 +16,7 @@ def clean_weather_data(input_file, output_file):
         }
     )
 
+    df["city"] = city_name
     df["month"] = df["date"].dt.month
     df["year"] = df["date"].dt.year
 
@@ -30,4 +31,5 @@ if __name__ == "__main__":
     clean_weather_data(
         input_file="data/raw/hannover_weather_2024.csv",
         output_file="data/processed/hannover_weather_2024_clean.csv",
+        city_name="hannover",
     )
