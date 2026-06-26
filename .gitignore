@@ -234,3 +234,6 @@ outputs/reports/
 
 # Generated analysis outputs
 outputs/analysis/
+
+# Generated figures
+outputs/figures/
