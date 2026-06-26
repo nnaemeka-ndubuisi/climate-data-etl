@@ -1,12 +1,13 @@
 from pathlib import Path
 import sqlite3
 import pandas as pd
+from logger import logger
 
 
 def validate_database(db_file, table_name="weather_data"):
     db_path = Path(db_file)
 
-    print("\n--- SQLite Database Validation ---")
+    logger.info("Starting SQLite database validation")
 
     if not db_path.exists():
         raise FileNotFoundError(f"Database file not found: {db_path}")
@@ -53,22 +54,22 @@ def validate_database(db_file, table_name="weather_data"):
             conn,
         )
 
-    print(f"Database file: {db_path}")
-    print(f"Table found: {table_name}")
+    logger.info(f"Database file: {db_path}")
+    logger.info(f"Table found: {table_name}")
 
-    print("\nRow count:")
-    print(row_count)
+    logger.info(f"Row count:\n{row_count}")
+    logger.info(f"Columns:\n{columns[['name', 'type']]}")
+    logger.info(f"Date range:\n{date_range}")
+    logger.info(f"Sample records:\n{sample_records}")
 
-    print("\nColumns:")
-    print(columns[["name", "type"]])
+    logger.info("Database validation completed successfully")
 
-    print("\nDate range:")
-    print(date_range)
-
-    print("\nSample records:")
-    print(sample_records)
-
-    print("\nValidation completed successfully.")
+    return {
+        "row_count": int(row_count.iloc[0, 0]),
+        "columns": columns,
+        "date_range": date_range,
+        "sample_records": sample_records,
+    }
 
 
 if __name__ == "__main__":
