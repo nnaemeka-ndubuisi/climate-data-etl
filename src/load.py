@@ -1,6 +1,7 @@
 import sqlite3
 from pathlib import Path
 import pandas as pd
+from logger import logger
 
 
 def load_to_database(input_file, db_file, if_exists="replace"):
@@ -17,7 +18,7 @@ def load_to_database(input_file, db_file, if_exists="replace"):
             index=False,
         )
 
-    print(f"Data successfully loaded into database: {db_path}")
+    logger.info(f"Data successfully loaded into database: {db_path}")
 
 
 if __name__ == "__main__":

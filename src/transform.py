@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import pandas as pd
-
+from logger import logger
 
 def clean_weather_data(input_file, output_file, city_name):
     df = pd.read_csv(input_file, parse_dates=["time"])
@@ -24,7 +24,7 @@ def clean_weather_data(input_file, output_file, city_name):
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     df.to_csv(output_path, index=False)
-    print(f"Cleaned data successfully saved to {output_path}")
+    logger.info(f"Cleaned data successfully saved to {output_path}")
 
 
 if __name__ == "__main__":
